@@ -2,7 +2,7 @@ package com.example.coachtimer
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.coachtimer.ui.main.MainFragment
+import com.example.coachtimer.ui.main.fragments.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
