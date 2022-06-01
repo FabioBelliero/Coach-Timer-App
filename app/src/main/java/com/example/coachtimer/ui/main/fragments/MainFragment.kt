@@ -44,8 +44,10 @@ class MainFragment : Fragment(), MainAdapter.RowClickListener {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        //App context
         val app = requireActivity().application
 
+        //RecyclerView
         layoutManager = LinearLayoutManager(context)
         recyclerview_main.layoutManager = layoutManager
         recyclerview_main.adapter = adapter
@@ -56,7 +58,7 @@ class MainFragment : Fragment(), MainAdapter.RowClickListener {
             MainViewModelFactory(app)
         )[MainViewModel::class.java]
 
-        //Set pattern observer
+        //Set observer
         viewModel.getList().observe(viewLifecycleOwner, Observer{
             adapter.setData(ArrayList(it))
             adapter.notifyDataSetChanged()

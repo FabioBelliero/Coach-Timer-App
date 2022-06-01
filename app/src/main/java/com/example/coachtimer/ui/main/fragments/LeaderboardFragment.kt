@@ -14,6 +14,7 @@ import com.example.coachtimer.R
 import com.example.coachtimer.ui.main.MainViewModel
 import com.example.coachtimer.ui.main.MainViewModelFactory
 import com.example.coachtimer.ui.main.recyclerview.LeaderboardAdapter
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -47,9 +48,9 @@ class LeaderboardFragment : Fragment() {
             MainViewModelFactory(requireActivity().application)
         )[MainViewModel::class.java]
 
+        //Go back callback
         val callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
-
                 //go to main
                 returnToMain()
             }
@@ -57,7 +58,6 @@ class LeaderboardFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(callback)
-
     }
 
     override fun onCreateView(
@@ -75,6 +75,7 @@ class LeaderboardFragment : Fragment() {
             returnToMain()
         }
 
+        //Toolbar menu
         toolbar.inflateMenu(R.menu.leaderboard_menu)
         toolbar.setOnMenuItemClickListener {
             var id = it.itemId
@@ -88,6 +89,7 @@ class LeaderboardFragment : Fragment() {
             true
         }
 
+        //RecyclerView
         layoutManager = LinearLayoutManager(context)
         v.findViewById<RecyclerView>(R.id.leaderboard_rv).layoutManager = layoutManager
         v.findViewById<RecyclerView>(R.id.leaderboard_rv).adapter = adapter
@@ -98,6 +100,12 @@ class LeaderboardFragment : Fragment() {
         })
 
         mainViewModel.sortBy(true)
+
+        //CSV Fab
+        val csvFab = v.findViewById<FloatingActionButton>(R.id.csv_fab)
+        csvFab.setOnClickListener{
+            mainViewModel.export()
+        }
 
         return v
     }

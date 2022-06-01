@@ -49,16 +49,18 @@ class SessionViewModel : ViewModel() {
         return stats
     }
 
+    //Post for lap list and all the stats
     private fun postAll(s : Stats){
         laps.postValue(lapsList)
         stats.postValue(s)
     }
 
+    //Post datapoint for the chart
     private fun postData(d: DataPoint){
         data.postValue(d)
     }
 
-    //substitute with a stats object
+    //Calculate all the stats of the lap and post them
     fun newLap(elapse : Double){
         n += 1
 
@@ -84,6 +86,7 @@ class SessionViewModel : ViewModel() {
 
     }
 
+    //Send the relevant stats to update the db
     fun getPerformance(): Array<Any> {
         val lapN = n
         val peak = peakSpeed

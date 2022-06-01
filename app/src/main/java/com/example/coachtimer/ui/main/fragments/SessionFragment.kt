@@ -58,6 +58,7 @@ class SessionFragment : Fragment() {
             param2 = it.getString(ARG_PARAM2)
         }
 
+        //Viewmodels
         sessionViewModel = ViewModelProvider(requireActivity())[SessionViewModel::class.java]
 
         mainViewModel = ViewModelProvider(
@@ -65,12 +66,12 @@ class SessionFragment : Fragment() {
             MainViewModelFactory(requireActivity().application)
         )[MainViewModel::class.java]
 
+        //Go back callback
         val callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
                 Log.d("test", "heh")
                 //save data
                 stopSession()
-
                 //go to main
                 returnToMain()
             }
@@ -84,10 +85,11 @@ class SessionFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        //args passed
         val args = this.arguments
         sessionViewModel.setLapDistance(args!!.getInt("distance"))
 
+        // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_session, container, false)
 
         //Toolbar
@@ -98,7 +100,6 @@ class SessionFragment : Fragment() {
             Log.d("test", "heh")
             //save data
             stopSession()
-
             //go to main
             returnToMain()
         }
@@ -109,6 +110,7 @@ class SessionFragment : Fragment() {
         v.findViewById<TextView>(R.id.explosiveness_text).text = "Expl. : " + String.format("%.3f", mainViewModel.playerSelected.explosiveness) + " m/s"
         v.findViewById<TextView>(R.id.endurance_text).text = "End. : " + mainViewModel.playerSelected.endurance.toString() + " laps"
 
+        //RecyclerView
         layoutManager = LinearLayoutManager(context)
         v.findViewById<RecyclerView>(R.id.recyclerview_session).layoutManager = layoutManager
         v.findViewById<RecyclerView>(R.id.recyclerview_session).adapter = adapter
@@ -118,14 +120,14 @@ class SessionFragment : Fragment() {
             adapter.notifyDataSetChanged()
         })
 
-        //chronometer
+        //Chronometer
         chrono = v.findViewById(R.id.chronometer)
 
         chrono.base = SystemClock.elapsedRealtime();
         chrono.start();
 
 
-        //lap fab
+        //Lap fab
         val lapFab = v.findViewById<FloatingActionButton>(R.id.lap_fab)
         lapFab.setOnClickListener{
             val elapsedMillis: Long = SystemClock.elapsedRealtime() - chrono.base
@@ -134,7 +136,7 @@ class SessionFragment : Fragment() {
             sessionViewModel.newLap(time)
         }
 
-        //stop fab
+        //Stop fab
         val stopFab = v.findViewById<FloatingActionButton>(R.id.stop_fab)
         stopFab.setOnClickListener{
             //save data
@@ -145,7 +147,7 @@ class SessionFragment : Fragment() {
             fragmentManager?.beginTransaction()?.replace(R.id.container, leaderboard)?.commit()
         }
 
-        //chart
+        //Chart
         graph = v.findViewById(R.id.graph)
         series= LineGraphSeries(arrayOf())
         avg= LineGraphSeries(arrayOf())
@@ -172,6 +174,7 @@ class SessionFragment : Fragment() {
             series.appendData(it, false , 100)
         })
 
+        //Stats observer
         sessionViewModel.getStatsObservable().observe(viewLifecycleOwner, Observer {
 
             //lap number
@@ -198,7 +201,6 @@ class SessionFragment : Fragment() {
     }
 
     fun stopSession(){
-        //graph.removeAllSeries()
         mainViewModel.setPerformance(sessionViewModel.getPerformance())
     }
 
