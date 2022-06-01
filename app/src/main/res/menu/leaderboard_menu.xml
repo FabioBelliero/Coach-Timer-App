@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+        <item
+            android:id="@+id/sort_expl"
+            android:title="Sort by explosiveness"/>
+        <item
+            android:id="@+id/sort_end"
+            android:title="Sort by endurance"/>
+</menu>

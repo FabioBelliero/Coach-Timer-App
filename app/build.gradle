@@ -74,4 +74,5 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2")
     implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.jjoe64:graphview:4.2.2'
 }

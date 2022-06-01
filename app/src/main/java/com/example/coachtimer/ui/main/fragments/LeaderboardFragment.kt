@@ -1,11 +1,19 @@
 package com.example.coachtimer.ui.main.fragments
 
 import android.os.Bundle
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.coachtimer.R
+import com.example.coachtimer.ui.main.MainViewModel
+import com.example.coachtimer.ui.main.MainViewModelFactory
+import com.example.coachtimer.ui.main.recyclerview.LeaderboardAdapter
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,12 +30,34 @@ class LeaderboardFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var mainViewModel: MainViewModel
+    private var layoutManager: RecyclerView.LayoutManager? = null
+    private var adapter = LeaderboardAdapter()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        setHasOptionsMenu(true)
         super.onCreate(savedInstanceState)
         arguments?.let {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        mainViewModel = ViewModelProvider(
+            requireActivity(),
+            MainViewModelFactory(requireActivity().application)
+        )[MainViewModel::class.java]
+
+        val callback = object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+
+                //go to main
+                returnToMain()
+            }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(callback)
+
     }
 
     override fun onCreateView(
@@ -35,7 +65,46 @@ class LeaderboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_leaderboard, container, false)
+        val v = inflater.inflate(R.layout.fragment_leaderboard, container, false)
+
+        //Toolbar
+        val toolbar = v.findViewById<Toolbar>(R.id.leaderboard_toolbar)
+        toolbar.title = "Leaderboard"
+        toolbar.navigationIcon = resources.getDrawable(R.drawable.ic_baseline_arrow_back_24)
+        toolbar.setNavigationOnClickListener {
+            returnToMain()
+        }
+
+        toolbar.inflateMenu(R.menu.leaderboard_menu)
+        toolbar.setOnMenuItemClickListener {
+            var id = it.itemId
+            if (id == R.id.sort_expl){
+                mainViewModel.sortBy(true)
+                adapter.setSort(true)
+            }else{
+                mainViewModel.sortBy(false)
+                adapter.setSort(false)
+            }
+            true
+        }
+
+        layoutManager = LinearLayoutManager(context)
+        v.findViewById<RecyclerView>(R.id.leaderboard_rv).layoutManager = layoutManager
+        v.findViewById<RecyclerView>(R.id.leaderboard_rv).adapter = adapter
+
+        mainViewModel.getListSorted().observe(viewLifecycleOwner, Observer{
+            adapter.setData(ArrayList(it))
+            adapter.notifyDataSetChanged()
+        })
+
+        mainViewModel.sortBy(true)
+
+        return v
+    }
+
+    fun returnToMain(){
+        val main = MainFragment()
+        fragmentManager?.beginTransaction()?.replace(R.id.container, main)?.commit()
     }
 
     companion object {

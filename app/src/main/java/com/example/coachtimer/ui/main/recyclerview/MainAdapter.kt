@@ -10,9 +10,9 @@ import com.example.coachtimer.R
 import com.example.coachtimer.data.db.Player
 import com.squareup.picasso.Picasso
 
-class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
+class MainAdapter(val listener: RowClickListener) : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
-    inner class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MainViewHolder(itemView: View, val listener: RowClickListener) : RecyclerView.ViewHolder(itemView) {
         var itemPicture: ImageView
         var itemName: TextView
 
@@ -30,16 +30,25 @@ class MainAdapter : RecyclerView.Adapter<MainAdapter.MainViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainViewHolder {
         val v = LayoutInflater.from(parent.context).inflate(R.layout.card_layout, parent, false)
-        return MainViewHolder(v)
+        return MainViewHolder(v, listener)
     }
 
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
+        //Used Picasso to use the Url
         Picasso.get().load(players[position].picture).into(holder.itemPicture)
         holder.itemName.text = players[position].name +" "+ players[position].surname
+
+        holder.itemView.setOnClickListener{
+            listener.onRowClick(players[position])
+        }
     }
 
     override fun getItemCount(): Int {
         return players.size
     }
 
+    //Click listener
+    interface RowClickListener {
+        fun onRowClick(player: Player)
+    }
 }
