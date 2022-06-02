@@ -175,7 +175,7 @@ class SessionFragment : Fragment() {
         })
 
         //Stats observer
-        sessionViewModel.getStatsObservable().observe(viewLifecycleOwner, Observer {
+        sessionViewModel.getStatistics().observe(viewLifecycleOwner, Observer {
 
             //lap number
             v.findViewById<TextView>(R.id.laps_text).text = it.n.toString()

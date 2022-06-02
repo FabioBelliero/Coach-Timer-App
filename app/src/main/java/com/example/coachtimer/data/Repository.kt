@@ -1,17 +1,11 @@
 package com.example.coachtimer.data
 
-import android.app.Application
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
 import com.example.coachtimer.data.db.Player
 import com.example.coachtimer.data.db.PlayersDAO
 
-
 class Repository(private val dao: PlayersDAO) {
 
-    fun getPlayers(): List<Player> {
+    fun getPlayers(): MutableList<Player> {
         return dao.getAll()
     }
 

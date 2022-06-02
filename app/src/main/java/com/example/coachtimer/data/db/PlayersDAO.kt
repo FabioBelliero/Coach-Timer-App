@@ -9,7 +9,7 @@ import androidx.room.Update
 interface PlayersDAO {
 
     @Query("SELECT * FROM players")
-    fun getAll(): List<Player>
+    fun getAll(): MutableList<Player>
 
     @Insert
     suspend fun insertPlayer(player: Player)

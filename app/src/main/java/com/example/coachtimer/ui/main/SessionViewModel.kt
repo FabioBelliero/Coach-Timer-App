@@ -45,7 +45,7 @@ class SessionViewModel : ViewModel() {
         return data
     }
 
-    fun getStatsObservable(): MutableLiveData<Stats> {
+    fun getStatistics(): MutableLiveData<Stats> {
         return stats
     }
 

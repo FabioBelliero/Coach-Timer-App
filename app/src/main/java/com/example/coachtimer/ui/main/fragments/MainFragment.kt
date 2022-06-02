@@ -63,10 +63,11 @@ class MainFragment : Fragment(), MainAdapter.RowClickListener {
             adapter.setData(ArrayList(it))
             adapter.notifyDataSetChanged()
         })
-
+        /*In case of DB
         //First access check
         val sharedPreferences : SharedPreferences = this.requireActivity().getSharedPreferences("SHARED_PREF", Context.MODE_PRIVATE)
         val firstAccess = sharedPreferences.getBoolean("first_access", true)
+
 
         if (firstAccess) {
             Log.d("MainFragment", "First Access, Calling API")
@@ -78,9 +79,9 @@ class MainFragment : Fragment(), MainAdapter.RowClickListener {
             editor.putBoolean("first_access", false)
             editor.apply()
         }
-        Log.d("MainFragment", "OK")
+         */
 
-
+        viewModel.getPlayersList()
 
     }
 

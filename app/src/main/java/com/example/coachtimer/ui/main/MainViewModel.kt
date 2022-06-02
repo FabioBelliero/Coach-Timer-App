@@ -21,32 +21,32 @@ import org.json.JSONObject
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
+    var check = true //check to make sure the API is called only once
+
     var players: MutableLiveData<List<Player>>
-    private val repository: Repository
+    //private val repository: Repository
     private val app = application
 
     lateinit var playerSelected: Player
 
     private var sorted: MutableLiveData<List<Player>>
-    private var l : List<Player> = listOf()
+    private var localList : MutableList<Player> = mutableListOf()
 
     private lateinit var listCSV: List<Player>
 
     init {
         players = MutableLiveData()
-        val dao = PlayersDB.getDB(application).playersDao()
-        repository = Repository(dao)
-
+        //val dao = PlayersDB.getDB(application).playersDao()
+        //repository = Repository(dao)
         sorted = MutableLiveData()
 
         postAll()
-
     }
 
     //Post the value when data changes
     private fun postAll() = viewModelScope.launch(Dispatchers.IO){
-        l = repository.getPlayers()
-        players.postValue(l)
+        //localList = repository.getPlayers()
+        players.postValue(localList)
     }
 
     //Gets the observable list
@@ -54,15 +54,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         return players
     }
 
-    //Insert a new player
+    //Insert a new player (DB Call)
     fun insertPlayer(player: Player) = viewModelScope.launch(Dispatchers.IO){
-        repository.insertPlayer(player)
+        //repository.insertPlayer(player)
         postAll()
     }
 
     //Update an existing player
     fun updatePlayer(player: Player) = viewModelScope.launch(Dispatchers.IO){
-        repository.updatePlayer(player)
+        //repository.updatePlayer(player) DB Call
+        val i = localList.indexOf(playerSelected)
+        localList[i] = player
         //sync(player)
         postAll()
     }
@@ -84,21 +86,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     //API Call to get the players list and put them into the DB
     fun getPlayersList() = viewModelScope.launch(Dispatchers.IO){
-        val queue = Volley.newRequestQueue(app)
-        val url = "https://randomuser.me/api/?seed=empatica&inc=name,picture&gender=male&results=10&noinfo"
+        if(check) {
+            val queue = Volley.newRequestQueue(app)
+            val url =
+                "https://randomuser.me/api/?seed=empatica&inc=name,picture&gender=male&results=10&noinfo"
 
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.GET, url, null,
-            { response ->
-                Log.d("Volley", "API Responding")
+            val jsonObjectRequest = JsonObjectRequest(
+                Request.Method.GET, url, null,
+                { response ->
+                    Log.d("Volley", "API Responding")
 
-                val results = response.getJSONArray("results")
+                    val results = response.getJSONArray("results")
+                    val l = ArrayList<Player>()
 
-                for (i in 0 until results.length()){
-                    var obj = results.getJSONObject(i)
-                    var name = obj.getJSONObject("name")
-                    var picture = obj.getJSONObject("picture")
+                    for (i in 0 until results.length()) {
+                        var obj = results.getJSONObject(i)
+                        var name = obj.getJSONObject("name")
+                        var picture = obj.getJSONObject("picture")
 
+                        /*DB call
                     insertPlayer(Player(i+1,
                         name.getString("first"),
                         name.getString("last"),
@@ -106,16 +112,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         0.0,
                         0
                     ))
+                    */
+
+                        l.add(
+                            Player(
+                                i + 1,
+                                name.getString("first"),
+                                name.getString("last"),
+                                picture.getString("large"),
+                                0.0,
+                                0
+                            )
+                        )
+                    }
+
+                    localList = l
+                    postAll()
+                },
+                { error ->
+                    Log.d("Volley", "Error: $error")
                 }
+            )
 
-                postAll()
-            },
-            { error ->
-                Log.d("Volley", "Error: $error")
-            }
-        )
-
-        queue.add(jsonObjectRequest)
+            queue.add(jsonObjectRequest)
+            check = false
+        }
     }
 
     //Sorting functions for leaderboard
@@ -127,9 +148,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         var list : List<Player>
 
         if (expl){
-            list = l.sortedBy { it.explosiveness }
+            list = localList.sortedBy { it.explosiveness }
         } else {
-            list = l.sortedBy { it.endurance }
+            list = localList.sortedBy { it.endurance }
         }
 
         listCSV = list.reversed()
