@@ -18,6 +18,7 @@ import com.example.coachtimer.data.db.Player
 import com.example.coachtimer.ui.main.MainViewModel
 import com.example.coachtimer.ui.main.MainViewModelFactory
 import com.example.coachtimer.ui.main.recyclerview.MainAdapter
+import com.example.coachtimer.ui.main.utils.BinarySerialization
 import kotlinx.android.synthetic.main.dialog_input.view.*
 import kotlinx.android.synthetic.main.fragment_main.*
 import java.util.*
